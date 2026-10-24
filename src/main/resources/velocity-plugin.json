@@ -1,0 +1,10 @@
+{
+  "id": "velocity-wol",
+  "name": "Velocity-WoL",
+  "version": "${version}",
+  "main": "dev.seelim.velocitywol.VelocityWoL",
+  "description": "${description}",
+  "authors": [
+    "Seedim"
+  ]
+}
