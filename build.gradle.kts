@@ -10,8 +10,17 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/")
 }
 
+configurations {
+    testImplementation {
+        extendsFrom(compileOnly.get())
+    }
+}
+
 dependencies {
     compileOnly(libs.velocity.api)
+
+    testImplementation(libs.kotlin.test)
+    testRuntimeOnly(libs.slf4j.simple)
 }
 
 kotlin {
@@ -44,5 +53,9 @@ tasks {
         filesMatching("velocity-plugin.json") {
             expand(props)
         }
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }

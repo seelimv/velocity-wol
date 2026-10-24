@@ -25,12 +25,20 @@ package dev.seelim.velocitywol
 import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
+import com.velocitypowered.api.plugin.annotation.DataDirectory
+import dev.seelim.velocitywol.config.ConfigManager
 import org.slf4j.Logger
+import java.nio.file.Path
 
-class VelocityWoL @Inject constructor(val logger: Logger) {
+class VelocityWoL @Inject constructor(
+    val logger: Logger,
+    @DataDirectory val dataDirectory: Path
+) {
+    val configManager = ConfigManager(dataDirectory, logger)
 
     @Subscribe
     fun onProxyInitialization(event: ProxyInitializeEvent) {
+        configManager.load()
         logger.info("Velocity-WoL initialized successfully!")
     }
 }

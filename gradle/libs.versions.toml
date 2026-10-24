@@ -3,9 +3,12 @@ kotlin = "2.4.21"
 shadow = "9.6.1"
 run-velocity = "3.1.0"
 velocity = "3.5.0-SNAPSHOT"
+slf4j = "2.0.17"
 
 [libraries]
 velocity-api = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
