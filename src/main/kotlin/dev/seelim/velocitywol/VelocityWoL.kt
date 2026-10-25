@@ -26,19 +26,39 @@ import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.plugin.annotation.DataDirectory
+import com.velocitypowered.api.proxy.ProxyServer
 import dev.seelim.velocitywol.config.ConfigManager
+import dev.seelim.velocitywol.core.WakeService
+import dev.seelim.velocitywol.network.WakeOnLanSender
 import org.slf4j.Logger
 import java.nio.file.Path
+import java.util.concurrent.TimeUnit
 
 class VelocityWoL @Inject constructor(
+    val server: ProxyServer,
     val logger: Logger,
     @DataDirectory val dataDirectory: Path
 ) {
     val configManager = ConfigManager(dataDirectory, logger)
+    val wolSender = WakeOnLanSender(logger)
+
+    lateinit var wakeService: WakeService
+        private set
 
     @Subscribe
     fun onProxyInitialization(event: ProxyInitializeEvent) {
-        configManager.load()
+        val config = configManager.load()
+        wakeService = WakeService(server, configManager, wolSender, logger)
+
+        server.scheduler.buildTask(this, Runnable { wakeService.tickPings() })
+            .repeat(config.pingIntervalSeconds, TimeUnit.SECONDS)
+            .schedule()
+
+        server.scheduler
+            .buildTask(this, Runnable { wakeService.tickActionBar() })
+            .repeat(1L, TimeUnit.SECONDS)
+            .schedule()
+
         logger.info("Velocity-WoL initialized successfully!")
     }
 }
