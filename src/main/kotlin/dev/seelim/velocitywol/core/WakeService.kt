@@ -116,12 +116,12 @@ class WakeService(
                 continue
             }
 
-            logger.info("Pinging target server '{}'...", serverName)
+            logger.debug("Pinging target server '{}'...", serverName)
 
             registeredServer.ping().whenComplete { pingResult, error ->
                 if (error == null && pingResult != null) {
                     if (session.transferred.compareAndSet(false, true)) {
-                        logger.info("Server '{}' is now online! Transferring {} waiting players...", serverName, session.playerUuids.size)
+                        logger.info("Server '{}' is now online! Transferring {} waiting player(s)...", serverName, session.playerUuids.size)
                         transferWaitingPlayers(session, registeredServer)
                     }
                 } else {
