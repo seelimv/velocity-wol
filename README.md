@@ -1,15 +1,13 @@
 # Velocity-WoL
-
 <!-- modrinth_exclude.start -->
 [![CI](https://github.com/seelimv/velocity-wol/actions/workflows/ci.yml/badge.svg)](https://github.com/seelimv/velocity-wol/actions/workflows/ci.yml)
 [![Modrinth](https://img.shields.io/modrinth/v/velocity-wol?label=Modrinth)](https://modrinth.com/plugin/velocity-wol)
 [![Release](https://img.shields.io/github/v/release/seelimv/velocity-wol)](https://github.com/seelimv/velocity-wol/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/seelimv/velocity-wol/blob/main/LICENSE.md)
 <!-- modrinth_exclude.end -->
-
 Velocity-WoL is a Velocity proxy plugin that wakes up offline backend servers on demand using **Wake-on-LAN (WoL)**.
 
-When a player connects to an offline server, the proxy sends a WoL magic packet, holds the player in a **holding server** (such as Limbo) with action bar notifications, and **automatically transfers** them once the server is reachable.
+When a player connects to an offline server, the proxy sends a WoL magic packet, holds the player in a **holding server**, and **automatically transfers** them once the server is reachable.
 
 ## Features
 
@@ -19,8 +17,7 @@ When a player connects to an offline server, the proxy sends a WoL magic packet,
 
 ## Requirements
 
-- Velocity proxy running Java 21 or newer.
-- A registered holding server in `velocity.toml` (such as [NanoLimbo](https://github.com/Nan1t/NanoLimbo) or [Limbo](https://github.com/Elytrium/Limbo)).
+- A registered holding server in `velocity.toml`.
 - Target machine with Wake-on-LAN enabled in BIOS/UEFI and network adapter settings.
 
 ## Configuration
@@ -94,7 +91,7 @@ servers {
 | `downtime.timezone`   | `UTC`               | Time zone used to evaluate downtime (e.g., `Europe/Berlin`).                         |
 | `downtime.start-time` | `00:00`             | Start time in 24-hour notation (`HH:mm`).                                            |
 | `downtime.end-time`   | `08:00`             | End time in 24-hour notation (`HH:mm`). Supports overnight ranges crossing midnight. |
-
+<!-- modrinth_exclude.start -->
 ## Building from Source
 
 ```bash
@@ -104,3 +101,4 @@ cd velocity-wol
 ```
 
 The compiled plugin jar will be located in `build/libs/`.
+<!-- modrinth_exclude.end -->
