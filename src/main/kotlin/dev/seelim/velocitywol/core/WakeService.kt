@@ -108,8 +108,26 @@ class WakeService(
      */
     fun tickPings() {
         val config = configManager.config
+        val now = Clock.System.now()
 
         for ((serverName, session) in activeSessions) {
+            val serverConfig = config.servers[serverName] ?: continue
+
+            val elapsedSeconds = (now - session.startedAt).inWholeSeconds
+            if (elapsedSeconds >= config.wakeTimeoutSeconds) {
+                logger.warn("Wake cycle for '{}' timed out after {}s without response.", session.serverName, elapsedSeconds)
+                activeSessions.remove(session.serverName)
+                session.playerUuids.forEach { waitingPlayers.remove(it) }
+                continue
+            }
+
+            val isDowntime = DowntimeEvaluator.isDowntime(serverConfig.downtime)
+            val timeSinceLastWol = (now - session.lastWolSentAt).inWholeSeconds
+            if (!isDowntime && timeSinceLastWol >= config.wolPacketIntervalSeconds && session.playerUuids.isNotEmpty()) {
+                session.lastWolSentAt = now
+                wolSender.send(serverConfig.mac, serverConfig.broadcastIp, serverConfig.port)
+            }
+
             val registeredServer = proxyServer.getServer(serverName).orElse(null)
             if (registeredServer == null) {
                 logger.warn("Configured WoL server '{}' is not registered in Velocity proxy!", serverName)
@@ -124,32 +142,8 @@ class WakeService(
                         logger.info("Server '{}' is now online! Transferring {} waiting player(s)...", serverName, session.playerUuids.size)
                         transferWaitingPlayers(session, registeredServer)
                     }
-                } else {
-                    handleServerStillOffline(session)
                 }
             }
-        }
-    }
-
-    private fun handleServerStillOffline(session: WakeSession) {
-        val config = configManager.config
-        val serverConfig = config.servers[session.serverName] ?: return
-        val now = Clock.System.now()
-
-        val elapsedSeconds = (now - session.startedAt).inWholeSeconds
-        if (elapsedSeconds >= config.wakeTimeoutSeconds) {
-            logger.warn("Wake cycle for '{}' timed out after {}s without response.", session.serverName, elapsedSeconds)
-            activeSessions.remove(session.serverName)
-            session.playerUuids.forEach { waitingPlayers.remove(it) }
-            return
-        }
-
-        val isDowntime = DowntimeEvaluator.isDowntime(serverConfig.downtime)
-        val timeSinceLastWol = (now - session.lastWolSentAt).inWholeSeconds
-
-        if (!isDowntime && timeSinceLastWol >= config.wolPacketIntervalSeconds && session.playerUuids.isNotEmpty()) {
-            wolSender.send(serverConfig.mac, serverConfig.broadcastIp, serverConfig.port)
-            session.lastWolSentAt = now
         }
     }
 
