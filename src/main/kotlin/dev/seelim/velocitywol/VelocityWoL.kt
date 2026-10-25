@@ -29,6 +29,7 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import dev.seelim.velocitywol.config.ConfigManager
 import dev.seelim.velocitywol.core.WakeService
+import dev.seelim.velocitywol.listener.ConnectionListener
 import dev.seelim.velocitywol.network.WakeOnLanSender
 import org.slf4j.Logger
 import java.nio.file.Path
@@ -58,6 +59,11 @@ class VelocityWoL @Inject constructor(
             .buildTask(this, Runnable { wakeService.tickActionBar() })
             .repeat(1L, TimeUnit.SECONDS)
             .schedule()
+
+        server.eventManager.register(
+            this,
+            ConnectionListener(server, configManager, wakeService, logger)
+        )
 
         logger.info("Velocity-WoL initialized successfully!")
     }
